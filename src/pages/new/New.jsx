@@ -6,6 +6,41 @@ import { useState } from 'react';
 
 const New = ({ inputs, title }) => {
     const [file, setFile] = useState('');
+    const [data, setData] = useState({
+        name: '',
+        name_and_surname: '',
+        phone: '',
+        address: '',
+        country: '',
+        email: '',
+    });
+
+    const [errors, setErrors] = useState({
+        name: '',
+        name_and_surname: '',
+        phone: '',
+        address: '',
+        country: '',
+    });
+
+    const handleChange = (e) => {
+        const id = e.target.id;
+        setData((prev) => {
+            return { ...prev, [id]: e.target.value };
+        });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        const { name, name_and_surname, phone, address, country } = data;
+        formData.append('name', name);
+        formData.append('name_and_surname', name_and_surname);
+        formData.append('phone', phone);
+        formData.append('address', address);
+        formData.append('country', country);
+        formData.append('image', file);
+    };
 
     return (
         <div className='new'>
@@ -27,7 +62,7 @@ const New = ({ inputs, title }) => {
                         />
                     </div>
                     <div className='right'>
-                        <form>
+                        <form onSubmit={handleSubmit}>
                             <div className='formInput'>
                                 <label htmlFor='file'>
                                     Image:{' '}
@@ -45,12 +80,15 @@ const New = ({ inputs, title }) => {
                                 <div className='formInput' key={input.id}>
                                     <label>{input.label}</label>
                                     <input
+                                        id={input.id}
+                                        value={data[input.id]}
                                         type={input.type}
                                         placeholder={input.placeholder}
+                                        onChange={handleChange}
                                     />
                                 </div>
                             ))}
-                            <button>Send</button>
+                            <button type='submit'>Send</button>
                         </form>
                     </div>
                 </div>
