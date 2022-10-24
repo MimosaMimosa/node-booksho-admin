@@ -3,25 +3,19 @@ import Sidebar from '../../components/sidebar/Sidebar';
 import Navbar from '../../components/navbar/Navbar';
 import DriveFolderUploadOutlinedIcon from '@mui/icons-material/DriveFolderUploadOutlined';
 import { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const New = ({ inputs, title }) => {
+const New = ({ inputs, title, redirect }) => {
+    const initalData = {};
+    inputs.forEach((input) => {
+        initalData[input.id] = '';
+    });
+
     const [file, setFile] = useState('');
-    const [data, setData] = useState({
-        name: '',
-        name_and_surname: '',
-        phone: '',
-        address: '',
-        country: '',
-        email: '',
-    });
-
-    const [errors, setErrors] = useState({
-        name: '',
-        name_and_surname: '',
-        phone: '',
-        address: '',
-        country: '',
-    });
+    const [data, setData] = useState(initalData);
+    const [errors, setErrors] = useState(initalData);
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const id = e.target.id;
@@ -33,13 +27,19 @@ const New = ({ inputs, title }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const formData = new FormData();
-        const { name, name_and_surname, phone, address, country } = data;
-        formData.append('name', name);
-        formData.append('name_and_surname', name_and_surname);
-        formData.append('phone', phone);
-        formData.append('address', address);
-        formData.append('country', country);
+        for (let key in data) {
+            formData.append(key, data[key]);
+        }
         formData.append('image', file);
+        axios
+            .post('http://localhost:4000/api/v1/users', formData)
+            .then(() => {
+                setData(initalData);
+                navigate(redirect);
+            })
+            .catch((error) => {
+                setErrors(error.response.data);
+            });
     };
 
     return (
@@ -86,6 +86,9 @@ const New = ({ inputs, title }) => {
                                         placeholder={input.placeholder}
                                         onChange={handleChange}
                                     />
+                                    <div className='error'>
+                                        {errors[input.id]}
+                                    </div>
                                 </div>
                             ))}
                             <button type='submit'>Send</button>

@@ -27,7 +27,11 @@ function App() {
                     <Route
                         path='new'
                         element={
-                            <New inputs={userInputs} title='Add New User' />
+                            <New
+                                inputs={userInputs}
+                                title='Add New User'
+                                redirect={'/users'}
+                            />
                         }
                     />
                 </Route>
