@@ -9,7 +9,7 @@ import List from "./pages/list/List";
 import Login from "./pages/login/Login";
 import New from "./pages/new/New";
 import Single from "./pages/single/Single";
-import { productInputs, userInputs } from "./formSource";
+import { userInputs } from "./formSource";
 import "./style/dark.scss";
 import { DarkModeContext } from "./context/darkModeContext";
 import { Fragment, useContext } from "react";
@@ -19,6 +19,7 @@ import AuthorCreate from "./pages/author/AuthorCreate";
 import AuthorTable from "./pages/author/AuthorTable";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import BookCreate from "./pages/Book/BookCreate";
+import Book from "./pages/Book/Book";
 
 function App() {
 	const { darkMode } = useContext(DarkModeContext);
@@ -54,6 +55,7 @@ function App() {
 						<Route path='create' element={<AuthorCreate />}></Route>
 					</Route>
 					<Route path='/products'>
+						<Route index element={<Book/>}></Route>
 						<Route
 							path='create'
 							element={<BookCreate />}

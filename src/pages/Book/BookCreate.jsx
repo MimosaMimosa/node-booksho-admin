@@ -24,7 +24,7 @@ import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import { grey } from "@mui/material/colors";
 import axios from "axios";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 const BookCreate = () => {
 	const data = {
@@ -39,6 +39,7 @@ const BookCreate = () => {
 	const [errors, setErrors] = useState(data);
 	const [input, setInput] = useState(data);
 	const [categories, setCategories] = useState([]);
+	const [searchParams,setSearchParams] = useSearchParams();
 
 	const navigate = useNavigate();
 	const handleDate = (newValue) => {
@@ -142,6 +143,7 @@ const BookCreate = () => {
 										placeholder='AuthorId'
 										label='AuthorId'
 										id='author'
+										defaultValue={searchParams.get('authorId') || null}
 										value={input.phone}
 										onChange={handleInput}
 										error={errors.phone ? true : false}

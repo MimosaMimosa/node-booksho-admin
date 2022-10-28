@@ -8,7 +8,7 @@ import Paper from "@mui/material/Paper";
 import { useContext, useEffect, useMemo } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
-import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
+import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
 import {
 	Avatar,
 	Box,
@@ -24,7 +24,7 @@ import { blue, green, red } from "@mui/material/colors";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { DataContext } from "../../context/DataContext";
 
-const AuthorTable = () => {
+const BookTable = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [searchParams, setSearchParams] = useSearchParams({ page: 1 });
@@ -35,7 +35,7 @@ const AuthorTable = () => {
 			<Box mt={2} display='flex' justifyContent='end'>
 				<Pagination
 					defaultPage={parseInt(searchParams.get("page"))}
-					count={state.authors.totalPage}
+					count={state.books.totalPage}
 					onChange={(event, page) => {
 						setSearchParams({ page });
 					}}
@@ -43,7 +43,7 @@ const AuthorTable = () => {
 			</Box>
 		),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[state.authors.totalPage]
+		[state.books.totalPage]
 	);
 
 	const handleDelete = () => {};
@@ -52,14 +52,14 @@ const AuthorTable = () => {
 		const CancelToken = axios.CancelToken;
 		const source = CancelToken.source();
 		axios
-			.get(`http://localhost:4000/api/v1/admin/authors${location.search}`, {
+			.get(`http://localhost:4000/api/v1/admin/books${location.search}`, {
 				cancelToken: source.token,
 			})
 			.then((res) => {
 				dispatch({
-					type: "STORE_AUTHORS",
-					authors: {
-						data: res.data.authors,
+					type: "STORE_BOOKS",
+					books: {
+						data: res.data.books,
 						totalPage: res.data.totalPage,
 					},
 				});
@@ -82,7 +82,7 @@ const AuthorTable = () => {
 				alignItems='center'
 			>
 				<Typography variant='h2' color='grey' sx={{ fontSize: "20px" }}>
-					Author Lists
+					Book Lists
 				</Typography>
 				<Button
 					variant='outlined'
@@ -99,20 +99,18 @@ const AuthorTable = () => {
 					<TableHead>
 						<TableRow>
 							<TableCell>Id</TableCell>
-							<TableCell>Name</TableCell>
-							<TableCell align='right'>Email</TableCell>
-							<TableCell align='right'>Profile</TableCell>
-							<TableCell align='right'>Date of birth</TableCell>
-							<TableCell align='right'>Phone</TableCell>
-							<TableCell align='right'>Address</TableCell>
-							<TableCell align='right'>Country</TableCell>
+							<TableCell align='right'>Author</TableCell>
+							<TableCell align='right'>Name</TableCell>
+							<TableCell align='right'>Category</TableCell>
+							<TableCell align='right'>Published At</TableCell>
+							<TableCell align='right'>Price</TableCell>
 							<TableCell align='right'>Action</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{state.authors.data.map((author) => (
+						{state.books.data.map((book) => (
 							<TableRow
-								key={author._id}
+								key={book._id}
 								sx={{
 									"&:last-child td, &:last-child th": {
 										border: 0,
@@ -120,40 +118,43 @@ const AuthorTable = () => {
 								}}
 							>
 								<TableCell component='th' scope='row'>
-									{author._id}
-								</TableCell>
-								<TableCell align='right'>
-									{author.name}
-								</TableCell>
-								<TableCell align='right'>
-									{author.email}
+									{book._id}
 								</TableCell>
 								<TableCell align='right'>
 									<Box display='flex' justifyContent='end'>
-										<Avatar
-											alt={author.name}
-											src={`http://localhost:4000/${author.image.url}`}
-										/>
+										<Tooltip
+											title={book.author.name}
+											sx={{ cursor: "pointer" }}
+										>
+											<Avatar
+												alt={book.author.name}
+												src={`http://localhost:4000/${book.author.image.url}`}
+											/>
+										</Tooltip>
 									</Box>
 								</TableCell>
+								<TableCell align='right'>{book.name}</TableCell>
 								<TableCell align='right'>
-									{dayjs(author.date_of_birth).format(
+									{book.category.name}
+								</TableCell>
+								<TableCell align='right'>
+									{dayjs(book.published_at).format(
 										"DD/MM/YYYY"
 									)}
 								</TableCell>
 								<TableCell align='right'>
-									{author.phone}
-								</TableCell>
-								<TableCell align='right'>
-									{author.address}
-								</TableCell>
-								<TableCell align='right'>
-									{author.country}
+									{book.price}
 								</TableCell>
 								<TableCell align='right'>
 									<Box>
 										<Tooltip title='create'>
-											<IconButton onClick={()=> navigate(`/products/create?authorId=${author._id}`)}>
+											<IconButton
+												onClick={() =>
+													navigate(
+														`/products/create?authorId=${book._id}`
+													)
+												}
+											>
 												<MenuBookOutlinedIcon
 													sx={{ color: blue[600] }}
 												/>
@@ -188,4 +189,4 @@ const AuthorTable = () => {
 	);
 };
 
-export default AuthorTable;
+export default BookTable;
