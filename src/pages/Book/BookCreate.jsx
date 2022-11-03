@@ -27,10 +27,11 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 const BookCreate = () => {
+	const [searchParams,setSearchParams] = useSearchParams();
 	const data = {
 		name: "",
 		price: "",
-		author: "",
+		author: searchParams.get('authorId') || null,
 		category: "",
 		description: "",
 	};
@@ -39,7 +40,6 @@ const BookCreate = () => {
 	const [errors, setErrors] = useState(data);
 	const [input, setInput] = useState(data);
 	const [categories, setCategories] = useState([]);
-	const [searchParams,setSearchParams] = useSearchParams();
 
 	const navigate = useNavigate();
 	const handleDate = (newValue) => {
@@ -69,7 +69,7 @@ const BookCreate = () => {
 				setErrors(data);
 			})
 			.catch((error) => {
-				console.log(error);
+				setErrors(error.response.data)
 			});
 	};
 
@@ -77,7 +77,7 @@ const BookCreate = () => {
 		axios
 			.get("http://localhost:4000/api/v1/categories")
 			.then((res) => {
-				setCategories(res.data);
+				setCategories(res.data.categories);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -124,10 +124,10 @@ const BookCreate = () => {
 										placeholder='Price'
 										label='Price'
 										id='price'
-										value={input.phone}
+										value={input.price}
 										onChange={handleInput}
-										error={errors.phone ? true : false}
-										helperText={errors.phone}
+										error={errors.price ? true : false}
+										helperText={errors.price}
 										InputProps={{
 											startAdornment: (
 												<InputAdornment position='start'>
@@ -144,10 +144,10 @@ const BookCreate = () => {
 										label='AuthorId'
 										id='author'
 										defaultValue={searchParams.get('authorId') || null}
-										value={input.phone}
+										value={input.authorId}
 										onChange={handleInput}
-										error={errors.phone ? true : false}
-										helperText={errors.phone}
+										error={errors.authorId ? true : false}
+										helperText={errors.authorId}
 										InputProps={{
 											startAdornment: (
 												<InputAdornment position='start'>

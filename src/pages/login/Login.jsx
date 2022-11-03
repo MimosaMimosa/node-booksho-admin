@@ -14,7 +14,7 @@ import {
 import { Container } from "@mui/system";
 import "./login.scss";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
-import { blue } from "@mui/material/colors";
+import { blue, green } from "@mui/material/colors";
 import AlternateEmailSharpIcon from "@mui/icons-material/AlternateEmailSharp";
 import { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -51,7 +51,7 @@ const Login = () => {
 				justifyContent='center'
 				alignItems='center'
 			>
-				<Box width='30%'>
+				<Box width='40%'>
 					<Paper elevation={3} sx={{ p:3 }}>
 						<Box
 							component='div'
@@ -59,7 +59,7 @@ const Login = () => {
 							display='flex'
 							justifyContent='center'
 						>
-							<Avatar sx={{ bgcolor: blue[500] }}>
+							<Avatar sx={{ bgcolor: '#6439ff' }}>
 								<LockOpenIcon />
 							</Avatar>
 						</Box>

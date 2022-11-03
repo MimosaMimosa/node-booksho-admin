@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
 	Avatar,
 	Box,
@@ -15,7 +16,6 @@ import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import { useState } from "react";
 import { Stack } from "@mui/system";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
@@ -24,10 +24,13 @@ import PhoneAndroidOutlinedIcon from "@mui/icons-material/PhoneAndroidOutlined";
 import { grey } from "@mui/material/colors";
 import HttpsIcon from "@mui/icons-material/Https";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import Person2Icon from '@mui/icons-material/Person2';
-import { toast } from "react-toastify";
-const AuthorCreate = () => {
+import { useNavigate, useParams } from "react-router-dom";
+import Person2Icon from "@mui/icons-material/Person2";
+import { toast } from 'react-toastify';
+
+const AuthorUpdate = () => {
+	const params = useParams();
+
 	const data = {
 		name: "",
 		email: "",
@@ -37,6 +40,7 @@ const AuthorCreate = () => {
 		password: "",
 	};
 	const [value, setValue] = useState(dayjs(new Date()));
+	const [image, setImage] = useState({});
 	const [file, setFile] = useState("");
 	const [errors, setErrors] = useState(data);
 	const [input, setInput] = useState(data);
@@ -58,7 +62,7 @@ const AuthorCreate = () => {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		const formData = new FormData();
-		formData.append("image", file);
+		formData.append("image", file)
 		formData.append("date_of_birth", value.$d);
 
 		for (let key in input) {
@@ -66,24 +70,40 @@ const AuthorCreate = () => {
 		}
 
 		axios
-			.post("http://localhost:4000/api/v1/admin/authors", formData)
+			.post(`http://localhost:4000/api/v1/admin/authors/${params.id}`, formData)
 			.then((res) => {
 				setErrors(data);
-				toast.success(res.data.message)
 				navigate("/authors");
+				toast.success(res.data.message)
 			})
 			.catch((error) => {
-				console.log(error);
+				console.error(error);
 				setErrors(error.response.data);
 			});
 	};
+
+	useEffect(() => {
+		axios
+			.get(`http://localhost:4000/api/v1/admin/authors/${params.id}`)
+			.then((res) => {
+				const { _id, date_of_birth, ...others } = res.data.author;
+				setInput((prev) => {
+					return { ...prev, ...others };
+				});
+				setImage(res.data.author.image);
+				setValue(dayjs(res.data.author.date_of_birth));
+			})
+			.catch((error) => {
+				console.error(error)
+			});
+	}, [params.id]);
 
 	return (
 		<Box display='flex'>
 			<Box sx={{ p: 3, width: "50%" }}>
 				<Paper elevation={2} sx={{ p: 3 }}>
 					<Typography variant='h2' fontSize={20} mb={3} color='grey'>
-						Create Author
+						Updated Author
 					</Typography>
 					<Grid container spacing={3}>
 						<Grid item md={6}>
@@ -258,13 +278,13 @@ const AuthorCreate = () => {
 								size='large'
 								sx={{
 									mt: 2,
-									pt:'13px',
+									pt: "13px",
 									fontSize: "15px",
 									fontWeight: "bold",
 									textTransform: "capitalize",
 								}}
 							>
-								Create
+								Update
 							</Button>
 						</Grid>
 					</Grid>
@@ -281,7 +301,11 @@ const AuthorCreate = () => {
 			>
 				<Avatar
 					sx={{ width: "300px", height: "300px" }}
-					src={file ? URL.createObjectURL(file) : null}
+					src={
+						file
+							? URL.createObjectURL(file)
+							: `http://localhost:4000/${image.url}`
+					}
 				>
 					<Person2Icon sx={{ fontSize: "200px" }} />
 				</Avatar>
@@ -290,4 +314,4 @@ const AuthorCreate = () => {
 	);
 };
 
-export default AuthorCreate;
+export default AuthorUpdate;

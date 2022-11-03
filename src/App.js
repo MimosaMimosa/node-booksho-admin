@@ -10,9 +10,7 @@ import Login from "./pages/login/Login";
 import New from "./pages/new/New";
 import Single from "./pages/single/Single";
 import { userInputs } from "./formSource";
-import "./style/dark.scss";
-import { DarkModeContext } from "./context/darkModeContext";
-import { Fragment, useContext } from "react";
+import { Fragment } from "react";
 import Root from "./pages/root/Root";
 import CreateCategory from "./pages/category/CreateCategory";
 import AuthorCreate from "./pages/author/AuthorCreate";
@@ -20,9 +18,11 @@ import AuthorTable from "./pages/author/AuthorTable";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import BookCreate from "./pages/Book/BookCreate";
 import Book from "./pages/Book/Book";
+import AuthorUpdate from "./pages/author/AuthorUpdate";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
-	const { darkMode } = useContext(DarkModeContext);
 	const theme = createTheme({
 		palette: {
 			primary: {
@@ -53,6 +53,7 @@ function App() {
 					<Route path='/authors'>
 						<Route index element={<AuthorTable />}></Route>
 						<Route path='create' element={<AuthorCreate />}></Route>
+						<Route path=':id' element={<AuthorUpdate />}></Route>
 					</Route>
 					<Route path='/products'>
 						<Route index element={<Book/>}></Route>
@@ -84,7 +85,8 @@ function App() {
 		)
 	);
 	return (
-		<div className={darkMode ? "app dark" : "app"}>
+		<div className="app">
+			<ToastContainer/>
 			<ThemeProvider theme={theme}>
 				<RouterProvider router={router} />
 			</ThemeProvider>
