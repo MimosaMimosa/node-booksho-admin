@@ -18,7 +18,12 @@ import {
 	Tooltip,
 	Typography,
 } from "@mui/material";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+	Link,
+	useLocation,
+	useNavigate,
+	useSearchParams,
+} from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { blue, green, red } from "@mui/material/colors";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
@@ -122,15 +127,19 @@ const BookTable = () => {
 								</TableCell>
 								<TableCell align='right'>
 									<Box display='flex' justifyContent='end'>
-										<Tooltip
-											title={book.author.name}
-											sx={{ cursor: "pointer" }}
+										<Link
+											to={`/authors/${book.author._id}`}
 										>
-											<Avatar
-												alt={book.author.name}
-												src={`http://localhost:4000/${book.author.image.url}`}
-											/>
-										</Tooltip>
+											<Tooltip
+												title={book.author.name}
+												sx={{ cursor: "pointer" }}
+											>
+												<Avatar
+													alt={book.author.name}
+													src={`http://localhost:4000/${book.author.image.url}`}
+												/>
+											</Tooltip>
+										</Link>
 									</Box>
 								</TableCell>
 								<TableCell align='right'>{book.name}</TableCell>

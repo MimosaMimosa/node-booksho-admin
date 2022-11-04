@@ -24,24 +24,24 @@ import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import { grey } from "@mui/material/colors";
 import axios from "axios";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { redirect, useSearchParams } from "react-router-dom";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
+import { toast } from "react-toastify";
 const BookCreate = () => {
-	const [searchParams,setSearchParams] = useSearchParams();
+	const [searchParams, setSearchParams] = useSearchParams();
 	const data = {
 		name: "",
 		price: "",
-		author: searchParams.get('authorId') || null,
+		author: searchParams.get("authorId") || null,
 		category: "",
 		description: "",
 	};
 	const [value, setValue] = useState(dayjs(new Date()));
 	const [file, setFile] = useState("");
-	const [errors, setErrors] = useState(data);
+	const [errors, setErrors] = useState({});
 	const [input, setInput] = useState(data);
 	const [categories, setCategories] = useState([]);
 
-	const navigate = useNavigate();
 	const handleDate = (newValue) => {
 		setValue(newValue);
 	};
@@ -66,10 +66,11 @@ const BookCreate = () => {
 		axios
 			.post("http://localhost:4000/api/v1/books", formData)
 			.then((res) => {
-				setErrors(data);
+				toast.success(res.data.message);
+				redirect("/products");
 			})
 			.catch((error) => {
-				setErrors(error.response.data)
+				setErrors(error.response.data);
 			});
 	};
 
@@ -143,11 +144,10 @@ const BookCreate = () => {
 										placeholder='AuthorId'
 										label='AuthorId'
 										id='author'
-										defaultValue={searchParams.get('authorId') || null}
-										value={input.authorId}
+										value={input.author}
 										onChange={handleInput}
-										error={errors.authorId ? true : false}
-										helperText={errors.authorId}
+										error={errors.author ? true : false}
+										helperText={errors.author}
 										InputProps={{
 											startAdornment: (
 												<InputAdornment position='start'>
@@ -179,6 +179,11 @@ const BookCreate = () => {
 												</MenuItem>
 											))}
 										</Select>
+										{errors.category ? (
+											<FormHelperText error>
+												{errors.category}
+											</FormHelperText>
+										) : null}
 									</FormControl>
 								</Grid>
 								<Grid item md={6}>
@@ -201,38 +206,41 @@ const BookCreate = () => {
 									</LocalizationProvider>
 								</Grid>
 								<Grid item md={6}>
-									<Button
-										component='label'
-										size='small'
-										variant='contained'
-										sx={{
-											height: "56px",
-											display: "flex",
-											color: "black",
-											alignItems: "center",
-											background: grey[200],
-											"&:hover": {
-												background: grey[100],
-											},
-										}}
-										fullWidth
-									>
-										<input
-											type='file'
-											hidden
-											id='image'
-											onChange={handleFile}
-										/>
-										<span>upload profile</span>
-										<CloudUploadOutlinedIcon
-											sx={{ mx: 1 }}
-										/>
-									</Button>
-									{errors.image ? (
-										<FormHelperText error>
-											{errors.image}
-										</FormHelperText>
-									) : null}
+									<FormControl fullWidth>
+										<Button
+											fullWidth
+											component='label'
+											size='small'
+											variant='contained'
+											sx={{
+												height: "56px",
+												display: "flex",
+												color: "black",
+												alignItems: "center",
+												background: grey[200],
+												"&:hover": {
+													background: grey[100],
+												},
+											}}
+										>
+											<input
+												type='file'
+												hidden
+												defaultValue={file}
+												id='image'
+												onChange={handleFile}
+											/>
+											<span>upload profile</span>
+											<CloudUploadOutlinedIcon
+												sx={{ mx: 1 }}
+											/>
+										</Button>
+										{errors.image ? (
+											<FormHelperText error>
+												{errors.image}
+											</FormHelperText>
+										) : null}
+									</FormControl>
 								</Grid>
 								<Grid item md={12}>
 									<TextField

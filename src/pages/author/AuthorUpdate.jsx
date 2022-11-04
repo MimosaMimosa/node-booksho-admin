@@ -26,7 +26,7 @@ import HttpsIcon from "@mui/icons-material/Https";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import Person2Icon from "@mui/icons-material/Person2";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const AuthorUpdate = () => {
 	const params = useParams();
@@ -62,7 +62,7 @@ const AuthorUpdate = () => {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		const formData = new FormData();
-		formData.append("image", file)
+		formData.append("image", file);
 		formData.append("date_of_birth", value.$d);
 
 		for (let key in input) {
@@ -70,11 +70,14 @@ const AuthorUpdate = () => {
 		}
 
 		axios
-			.post(`http://localhost:4000/api/v1/admin/authors/${params.id}`, formData)
+			.post(
+				`http://localhost:4000/api/v1/admin/authors/${params.id}`,
+				formData
+			)
 			.then((res) => {
 				setErrors(data);
 				navigate("/authors");
-				toast.success(res.data.message)
+				toast.success(res.data.message);
 			})
 			.catch((error) => {
 				console.error(error);
@@ -86,7 +89,7 @@ const AuthorUpdate = () => {
 		axios
 			.get(`http://localhost:4000/api/v1/admin/authors/${params.id}`)
 			.then((res) => {
-				const { _id, date_of_birth, ...others } = res.data.author;
+				const { _id, id, date_of_birth, ...others } = res.data.author;
 				setInput((prev) => {
 					return { ...prev, ...others };
 				});
@@ -94,7 +97,7 @@ const AuthorUpdate = () => {
 				setValue(dayjs(res.data.author.date_of_birth));
 			})
 			.catch((error) => {
-				console.error(error)
+				console.error(error);
 			});
 	}, [params.id]);
 
@@ -301,11 +304,7 @@ const AuthorUpdate = () => {
 			>
 				<Avatar
 					sx={{ width: "300px", height: "300px" }}
-					src={
-						file
-							? URL.createObjectURL(file)
-							: `http://localhost:4000/${image.url}`
-					}
+					src={file ? URL.createObjectURL(file) : image.url}
 				>
 					<Person2Icon sx={{ fontSize: "200px" }} />
 				</Avatar>

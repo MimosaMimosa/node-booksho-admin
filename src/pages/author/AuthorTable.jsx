@@ -223,10 +223,10 @@ const AuthorTable = () => {
 											<Box
 												display='flex'
 												justifyContent='end'
-											>
+											>	
 												<Avatar
 													alt={author.name}
-													src={`http://localhost:4000/${author.image.url}`}
+													src={author.image.url}
 												/>
 											</Box>
 										</TableCell>

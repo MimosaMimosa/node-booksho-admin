@@ -25,7 +25,7 @@ import { grey } from "@mui/material/colors";
 import HttpsIcon from "@mui/icons-material/Https";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Person2Icon from '@mui/icons-material/Person2';
+import Person2Icon from "@mui/icons-material/Person2";
 import { toast } from "react-toastify";
 const AuthorCreate = () => {
 	const data = {
@@ -69,12 +69,13 @@ const AuthorCreate = () => {
 			.post("http://localhost:4000/api/v1/admin/authors", formData)
 			.then((res) => {
 				setErrors(data);
-				toast.success(res.data.message)
+				toast.success(res.data.message);
 				navigate("/authors");
 			})
 			.catch((error) => {
-				console.log(error);
-				setErrors(error.response.data);
+				if (error.code !== "ERR_CANCELED") {
+					setErrors(error.response.data);
+				}
 			});
 	};
 
@@ -258,7 +259,7 @@ const AuthorCreate = () => {
 								size='large'
 								sx={{
 									mt: 2,
-									pt:'13px',
+									pt: "13px",
 									fontSize: "15px",
 									fontWeight: "bold",
 									textTransform: "capitalize",
