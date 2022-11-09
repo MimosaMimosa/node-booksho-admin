@@ -19,8 +19,10 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import BookCreate from "./pages/Book/BookCreate";
 import Book from "./pages/Book/Book";
 import AuthorUpdate from "./pages/author/AuthorUpdate";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ErrorElement from "./errors/ErrorElement";
+import PageNotFound from "./errors/PageNotFound";
 
 function App() {
 	const theme = createTheme({
@@ -53,40 +55,28 @@ function App() {
 					<Route path='/authors'>
 						<Route index element={<AuthorTable />}></Route>
 						<Route path='create' element={<AuthorCreate />}></Route>
-						<Route path=':id' element={<AuthorUpdate />}></Route>
-					</Route>
-					<Route path='/products'>
-						<Route index element={<Book/>}></Route>
 						<Route
-							path='create'
-							element={<BookCreate />}
+							path=':id'
+							element={<AuthorUpdate />}
+							errorElement={<ErrorElement />}
 						></Route>
 					</Route>
-					{/* <Route path='products'>
-						<Route index element={<List />} />
-						<Route path=':productId' element={<Single />} />
-						<Route
-							path='new'
-							element={
-								<New
-									inputs={productInputs}
-									title='Add New Product'
-								/>
-							}
-						/>
-					</Route> */}
+					<Route path='/products'>
+						<Route index element={<Book />}></Route>
+						<Route path='create' element={<BookCreate />}></Route>
+					</Route>
 					<Route path='categories'>
 						<Route path='create' element={<CreateCategory />} />
 					</Route>
-				
 				</Route>
 				<Route path='/admin/login' element={<Login />}></Route>
+				<Route path='/404' element={<PageNotFound />}></Route>
 			</Fragment>
 		)
 	);
 	return (
-		<div className="app">
-			<ToastContainer/>
+		<div className='app'>
+			<ToastContainer />
 			<ThemeProvider theme={theme}>
 				<RouterProvider router={router} />
 			</ThemeProvider>

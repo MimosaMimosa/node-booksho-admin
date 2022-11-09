@@ -32,7 +32,7 @@ const BookCreate = () => {
 	const data = {
 		name: "",
 		price: "",
-		author: searchParams.get("authorId") || null,
+		author: searchParams.get("authorId"),
 		category: "",
 		description: "",
 	};
@@ -64,7 +64,7 @@ const BookCreate = () => {
 		}
 
 		axios
-			.post("http://localhost:4000/api/v1/books", formData)
+			.post("http://localhost:4000/api/v1/admin/books", formData)
 			.then((res) => {
 				toast.success(res.data.message);
 				redirect("/products");
@@ -76,7 +76,7 @@ const BookCreate = () => {
 
 	useEffect(() => {
 		axios
-			.get("http://localhost:4000/api/v1/categories")
+			.get("http://localhost:4000/api/v1/admin/categories")
 			.then((res) => {
 				setCategories(res.data.categories);
 			})
@@ -144,7 +144,7 @@ const BookCreate = () => {
 										placeholder='AuthorId'
 										label='AuthorId'
 										id='author'
-										value={input.author}
+										value={input.author ?? ""}
 										onChange={handleInput}
 										error={errors.author ? true : false}
 										helperText={errors.author}
@@ -158,7 +158,9 @@ const BookCreate = () => {
 									/>
 								</Grid>
 								<Grid item md={6}>
-									<FormControl fullWidth>
+									<FormControl fullWidth error={
+												errors.category ? true : false
+											}>
 										<InputLabel id='category-label'>
 											Category
 										</InputLabel>
@@ -253,6 +255,10 @@ const BookCreate = () => {
 										onChange={handleInput}
 										minRows={5}
 										maxRows={5}
+										error={
+											errors.description ? true : false
+										}
+										helperText={errors.description}
 									/>
 								</Grid>
 								<Grid item md={12}>

@@ -24,62 +24,15 @@ import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import PhoneAndroidOutlinedIcon from "@mui/icons-material/PhoneAndroidOutlined";
 import { grey } from "@mui/material/colors";
 import HttpsIcon from "@mui/icons-material/Https";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import Person2Icon from "@mui/icons-material/Person2";
-import { toast } from "react-toastify";
-const AuthorCreate = () => {
-	const data = {
-		name: "",
-		email: "",
-		phone: "",
-		address: "",
-		country: "",
-		password: "",
-	};
-	const [value, setValue] = useState(dayjs(new Date()));
-	const [file, setFile] = useState("");
-	const [errors, setErrors] = useState(data);
-	const [input, setInput] = useState(data);
-	const navigate = useNavigate();
-
-	const handleDate = (newValue) => {
-		setValue(newValue);
-	};
-	const handleFile = (e) => {
-		setFile(e.target.files[0]);
-	};
-
-	const handleInput = (e) => {
-		setInput((prev) => {
-			return { ...prev, [e.target.id]: e.target.value };
-		});
-	};
-
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		const formData = new FormData();
-		formData.append("image", file);
-		formData.append("date_of_birth", value.$d);
-
-		for (let key in input) {
-			formData.append(key, input[key]);
-		}
-
-		axios
-			.post("http://localhost:4000/api/v1/admin/authors", formData)
-			.then((res) => {
-				setErrors(data);
-				toast.success(res.data.message);
-				navigate("/authors");
-			})
-			.catch((error) => {
-				if (error.code !== "ERR_CANCELED") {
-					setErrors(error.response.data);
-				}
-			});
-	};
-
+const AuthorForm = ({
+	handleInput,
+	handleDate,
+	handleFile,
+	handleSubmit,
+	data,
+}) => {
+	const { date, file, errors, input } = data;
 	return (
 		<Box display='flex'>
 			<Box sx={{ p: 3, width: "50%" }}>
@@ -133,7 +86,7 @@ const AuthorCreate = () => {
 										id='date_of_birth'
 										label='Date of birth'
 										inputFormat='MM/DD/YYYY'
-										value={value}
+										value={date}
 										onChange={handleDate}
 										renderInput={(params) => (
 											<TextField {...params} />
@@ -294,4 +247,4 @@ const AuthorCreate = () => {
 	);
 };
 
-export default AuthorCreate;
+export default AuthorForm;

@@ -37,7 +37,6 @@ import { toast } from "react-toastify";
 const AuthorTable = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const [fetch, setFetch] = useState(false);
 	const [searchParams, setSearchParams] = useSearchParams({ page: 1 });
 	const { state, dispatch } = useContext(DataContext);
 	const [deleteId, setDeleteId] = useState(false);
@@ -62,13 +61,15 @@ const AuthorTable = () => {
 					`http://localhost:4000/api/v1/admin/authors/${deleteId}`
 				)
 				.then((res) => {
-					setDeleteId(false);
 					toast.success(res.data.message);
-					setFetch(!fetch)
+					navigate("/authors", { replace: true });
 				})
 				.catch((error) => {
 					toast.error(error.response.data.message);
 					console.error(error);
+				})
+				.finally(() => {
+					setDeleteId(false);
 				});
 		}
 	};
@@ -99,7 +100,7 @@ const AuthorTable = () => {
 			source.cancel();
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [location.search, searchParams,fetch]);
+	}, [location.search, searchParams, location]);
 
 	return (
 		<>
@@ -141,7 +142,7 @@ const AuthorTable = () => {
 							<Button
 								onClick={() => setDeleteId(false)}
 								size='small'
-								color="primary"
+								color='primary'
 								variant='contained'
 								sx={{ marginRight: "5px" }}
 							>
@@ -223,7 +224,7 @@ const AuthorTable = () => {
 											<Box
 												display='flex'
 												justifyContent='end'
-											>	
+											>
 												<Avatar
 													alt={author.name}
 													src={author.image.url}
