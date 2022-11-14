@@ -22,6 +22,8 @@ import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import { grey } from "@mui/material/colors";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import { CameraAlt } from "@mui/icons-material";
+import { useState,useEffect } from "react";
+import axios  from "axios";
 const BookForm = ({
 	data,
 	handleDate,
@@ -29,7 +31,18 @@ const BookForm = ({
 	handleInput,
 	handleSubmit,
 }) => {
-	const { input, date, file, categories, errors } = data;
+	const { input, date, file, errors } = data;
+	const [categories, setCategories] = useState([]);
+	useEffect(() => {
+		axios
+			.get("http://localhost:4000/api/v1/admin/categories")
+			.then((res) => {
+				setCategories(res.data.categories)
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	});
 	return (
 		<>
 			<Box p={3} mt={2}>
@@ -247,9 +260,13 @@ const BookForm = ({
 								display: "flex",
 							}}
 						>
-							{file ? (
+							{file || data.image ? (
 								<img
-									src={file}
+									src={
+										file
+											? URL.createObjectURL(file)
+											: data.image
+									}
 									alt='book'
 									style={{
 										width: "100%",

@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { useEffect, useReducer } from "react";
+import { useReducer } from "react";
 import axios from "axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -76,17 +76,6 @@ const BookCreate = () => {
 			});
 	};
 
-	useEffect(() => {
-		axios
-			.get("http://localhost:4000/api/v1/admin/categories")
-			.then((res) => {
-				dispatch({ data: res.data.categories, type: "CATEGORIES" });
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	}, [dispatch]);
-	
 	return (
 		<>
 			<BookForm

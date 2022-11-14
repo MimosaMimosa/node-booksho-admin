@@ -42,6 +42,7 @@ const BookUpdate = () => {
 		file: "",
 		categories: [],
 		errors: {},
+		image:"",
 	});
 
 	const handleDate = (data) => {
@@ -49,7 +50,7 @@ const BookUpdate = () => {
 	};
 	const handleFile = (e) => {
 		dispatch({
-			data: URL.createObjectURL(e.target.files[0]),
+			data: e.target.files[0],
 			type: "FILE",
 		});
 	};
@@ -67,8 +68,6 @@ const BookUpdate = () => {
 		const formData = new FormData();
 		formData.append("image", state.file);
 		formData.append("published_at", state.date.$d);
-
-        console.log(state.input);
 		for (let key in state.input) {
 			formData.append(key, state.input[key]);
 		}
@@ -83,6 +82,7 @@ const BookUpdate = () => {
 				navigate("/products");
 			})
 			.catch((error) => {
+				console.error(error)
 				dispatch({ data: error.response.data, type: "ERRORS" });
 			});
 	};
@@ -109,20 +109,11 @@ const BookUpdate = () => {
 							author: author._id,
 							category: category._id,
 						},
+						image:image[0].url,
 						date: dayjs(published_at),
-                        file: image[0].url
 					},
 					type: "SHOW",
 				});
-			});
-
-		axios
-			.get("http://localhost:4000/api/v1/admin/categories")
-			.then((res) => {
-				dispatch({ data: res.data.categories, type: "CATEGORIES" });
-			})
-			.catch((error) => {
-				console.log(error);
 			});
 	}, [dispatch, params.id]);
 

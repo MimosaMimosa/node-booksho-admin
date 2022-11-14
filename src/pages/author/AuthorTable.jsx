@@ -20,7 +20,6 @@ import {
 	Pagination,
 	Tooltip,
 	Typography,
-	useTheme,
 } from "@mui/material";
 import {
 	Link,
@@ -295,7 +294,7 @@ const AuthorTable = () => {
 						</TableBody>
 					</Table>
 				</TableContainer>
-				{/* {state.authors.data.length ? (
+				{state.authors.data.length ? (
 					<Box mt={2} display='flex' justifyContent='end'>
 						<Pagination
 							defaultPage={parseInt(searchParams.get("page"))}
@@ -305,7 +304,7 @@ const AuthorTable = () => {
 							}}
 						/>
 					</Box>
-				) : null} */}
+				) : null}
 			</Box>
 		</>
 	);
