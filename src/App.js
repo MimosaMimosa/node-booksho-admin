@@ -23,6 +23,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ErrorElement from "./errors/ErrorElement";
 import PageNotFound from "./errors/PageNotFound";
+import BookUpdate from "./pages/Book/BookUpdate";
 
 function App() {
 	const theme = createTheme({
@@ -55,15 +56,12 @@ function App() {
 					<Route path='/authors'>
 						<Route index element={<AuthorTable />}></Route>
 						<Route path='create' element={<AuthorCreate />}></Route>
-						<Route
-							path=':id'
-							element={<AuthorUpdate />}
-							errorElement={<ErrorElement />}
-						></Route>
+						<Route path=':id' element={<AuthorUpdate />}></Route>
 					</Route>
 					<Route path='/products'>
 						<Route index element={<Book />}></Route>
 						<Route path='create' element={<BookCreate />}></Route>
+						<Route path=':id' element={<BookUpdate />}></Route>
 					</Route>
 					<Route path='categories'>
 						<Route path='create' element={<CreateCategory />} />

@@ -15,8 +15,6 @@ import DriveFileRenameOutlineOutlinedIcon from "@mui/icons-material/DriveFileRen
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
-import { useState } from "react";
 import { Stack } from "@mui/system";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
@@ -30,6 +28,7 @@ const AuthorForm = ({
 	handleDate,
 	handleFile,
 	handleSubmit,
+	status = "Create",
 	data,
 }) => {
 	const { date, file, errors, input } = data;
@@ -221,7 +220,7 @@ const AuthorForm = ({
 									textTransform: "capitalize",
 								}}
 							>
-								Create
+								{status}
 							</Button>
 						</Grid>
 					</Grid>
@@ -238,7 +237,7 @@ const AuthorForm = ({
 			>
 				<Avatar
 					sx={{ width: "300px", height: "300px" }}
-					src={file ? URL.createObjectURL(file) : null}
+					src={file ? URL.createObjectURL(file) : data.image?.url}
 				>
 					<Person2Icon sx={{ fontSize: "200px" }} />
 				</Avatar>

@@ -1,72 +1,73 @@
-import { useEffect, useState } from "react";
-import {
-	Avatar,
-	Box,
-	Button,
-	FormHelperText,
-	Grid,
-	InputAdornment,
-	Paper,
-	TextField,
-	Typography,
-} from "@mui/material";
-import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
-import DriveFileRenameOutlineOutlinedIcon from "@mui/icons-material/DriveFileRenameOutlineOutlined";
-import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { useEffect, useReducer } from "react";
+
 import dayjs from "dayjs";
-import { Stack } from "@mui/system";
-import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
-import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
-import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
-import PhoneAndroidOutlinedIcon from "@mui/icons-material/PhoneAndroidOutlined";
-import { grey } from "@mui/material/colors";
-import HttpsIcon from "@mui/icons-material/Https";
+
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import Person2Icon from "@mui/icons-material/Person2";
 import { toast } from "react-toastify";
+import AuthorForm from "./AuthorForm";
 
 const AuthorUpdate = () => {
 	const params = useParams();
-
-	const data = {
-		name: "",
-		email: "",
-		phone: "",
-		address: "",
-		country: "",
-		password: "",
-	};
-	const [value, setValue] = useState(dayjs(new Date()));
-	const [image, setImage] = useState({});
-	const [file, setFile] = useState("");
-	const [errors, setErrors] = useState(data);
-	const [input, setInput] = useState(data);
 	const navigate = useNavigate();
+	const reducer = (state, action) => {
+		switch (action.type) {
+			case "FILE":
+				return { ...state, file: action.data };
+			case "ERRORS":
+				return { ...state, errors: action.data };
+			case "DATE":
+				return { ...state, date: action.data };
+			case "INPUT":
+				return { ...state, input: action.data };
+			case "IMAGE":
+				return { ...state, image: action.data };
+			case "SHOW":
+				return { ...state, ...action.data };
+			default:
+				return state;
+		}
+	};
 
-	const handleDate = (newValue) => {
-		setValue(newValue);
+	const [state, dispatch] = useReducer(reducer, {
+		date: dayjs(new Date()),
+		file: "",
+		errors: {},
+		input: {
+			name: "",
+			email: "",
+			phone: "",
+			country: "",
+			address: "",
+		},
+		image: "",
+	});
+
+	const handleDate = (data) => {
+		dispatch({ type: "DATE", data });
 	};
 	const handleFile = (e) => {
-		setFile(e.target.files[0]);
+		dispatch({ type: "FILE", data: e.target.files[0] });
 	};
 
 	const handleInput = (e) => {
-		setInput((prev) => {
-			return { ...prev, [e.target.id]: e.target.value };
+		dispatch({
+			type: "INPUT",
+			data: {
+				...state.input,
+				[e.target.id || e.target.name]: e.target.value,
+			},
 		});
 	};
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		const formData = new FormData();
-		formData.append("image", file);
-		formData.append("date_of_birth", value.$d);
+		formData.append("image", state.file);
+		formData.append("date_of_birth", state.date.$d);
 
-		for (let key in input) {
-			formData.append(key, input[key]);
+		for (let key in state.input) {
+			formData.append(key, state.input[key]);
 		}
 
 		axios
@@ -75,13 +76,13 @@ const AuthorUpdate = () => {
 				formData
 			)
 			.then((res) => {
-				setErrors(data);
+				dispatch({ type: "ERRORS", data: {} });
 				navigate("/authors");
 				toast.success(res.data.message);
 			})
 			.catch((error) => {
 				console.error(error);
-				setErrors(error.response.data);
+				dispatch({ type: "ERRORS", data: error.response.data });
 			});
 	};
 
@@ -89,12 +90,23 @@ const AuthorUpdate = () => {
 		axios
 			.get(`http://localhost:4000/api/v1/admin/authors/${params.id}`)
 			.then((res) => {
-				const { _id, id, date_of_birth, ...others } = res.data.author;
-				setInput((prev) => {
-					return { ...prev, ...others };
+				const {
+					name,
+					email,
+					phone,
+					country,
+					image,
+					date_of_birth,
+					address,
+				} = res.data.author;
+				dispatch({
+					type: "SHOW",
+					data: {
+						input: { name, email, phone, country, address },
+						image,
+					},
+					date: dayjs(date_of_birth),
 				});
-				setImage(res.data.author.image);
-				setValue(dayjs(res.data.author.date_of_birth));
 			})
 			.catch((error) => {
 				console.error(error);
@@ -102,214 +114,14 @@ const AuthorUpdate = () => {
 	}, [params.id]);
 
 	return (
-		<Box display='flex'>
-			<Box sx={{ p: 3, width: "50%" }}>
-				<Paper elevation={2} sx={{ p: 3 }}>
-					<Typography variant='h2' fontSize={20} mb={3} color='grey'>
-						Updated Author
-					</Typography>
-					<Grid container spacing={3}>
-						<Grid item md={6}>
-							<TextField
-								fullWidth
-								label='Email'
-								placeholder='mario@email.com'
-								id='email'
-								value={input.email}
-								onChange={handleInput}
-								error={errors.email ? true : false}
-								helperText={errors.email}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position='start'>
-											<EmailOutlinedIcon />
-										</InputAdornment>
-									),
-								}}
-							/>
-						</Grid>
-						<Grid item md={6}>
-							<TextField
-								fullWidth
-								label='Name'
-								id='name'
-								value={input.name}
-								onChange={handleInput}
-								error={errors.name ? true : false}
-								helperText={errors.name}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position='start'>
-											<DriveFileRenameOutlineOutlinedIcon />
-										</InputAdornment>
-									),
-								}}
-							/>
-						</Grid>
-						<Grid item md={6}>
-							<LocalizationProvider dateAdapter={AdapterDayjs}>
-								<Stack sx={{ width: "100%" }}>
-									<MobileDatePicker
-										fullWidth
-										id='date_of_birth'
-										label='Date of birth'
-										inputFormat='MM/DD/YYYY'
-										value={value}
-										onChange={handleDate}
-										renderInput={(params) => (
-											<TextField {...params} />
-										)}
-									/>
-								</Stack>
-							</LocalizationProvider>
-						</Grid>
-						<Grid item md={6}>
-							<TextField
-								fullWidth
-								placeholder='Mario'
-								label='Phone'
-								id='phone'
-								value={input.phone}
-								onChange={handleInput}
-								error={errors.phone ? true : false}
-								helperText={errors.phone}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position='start'>
-											<PhoneAndroidOutlinedIcon />
-										</InputAdornment>
-									),
-								}}
-							/>
-						</Grid>
-						<Grid item md={6}>
-							<TextField
-								fullWidth
-								placeholder='New York'
-								label='Address'
-								id='address'
-								value={input.address}
-								onChange={handleInput}
-								error={errors.address ? true : false}
-								helperText={errors.address}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position='start'>
-											<LocationOnOutlinedIcon />
-										</InputAdornment>
-									),
-								}}
-							/>
-						</Grid>
-						<Grid item md={6}>
-							<TextField
-								fullWidth
-								placeholder='USA'
-								label='Country'
-								id='country'
-								value={input.country}
-								onChange={handleInput}
-								error={errors.country ? true : false}
-								helperText={errors.country}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position='start'>
-											<FlagOutlinedIcon />
-										</InputAdornment>
-									),
-								}}
-							/>
-						</Grid>
-						<Grid item md={6}>
-							<TextField
-								type='password'
-								fullWidth
-								placeholder='password'
-								label='Password'
-								id='password'
-								value={input.password}
-								onChange={handleInput}
-								error={errors.password ? true : false}
-								helperText={errors.password}
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position='start'>
-											<HttpsIcon />
-										</InputAdornment>
-									),
-								}}
-							/>
-						</Grid>
-						<Grid item md={6}>
-							<Button
-								component='label'
-								size='small'
-								variant='contained'
-								sx={{
-									height: "56px",
-									display: "flex",
-									color: "black",
-									alignItems: "center",
-									background: grey[200],
-									"&:hover": {
-										background: grey[100],
-									},
-								}}
-								fullWidth
-							>
-								<input
-									type='file'
-									hidden
-									id='image'
-									onChange={handleFile}
-								/>
-								<span>upload profile</span>
-								<CloudUploadOutlinedIcon sx={{ mx: 1 }} />
-							</Button>
-							{errors.image ? (
-								<FormHelperText error>
-									{errors.image}
-								</FormHelperText>
-							) : null}
-						</Grid>
-						<Grid item md={12}>
-							<Button
-								onClick={handleSubmit}
-								fullWidth
-								variant='contained'
-								color='primary'
-								size='large'
-								sx={{
-									mt: 2,
-									pt: "13px",
-									fontSize: "15px",
-									fontWeight: "bold",
-									textTransform: "capitalize",
-								}}
-							>
-								Update
-							</Button>
-						</Grid>
-					</Grid>
-				</Paper>
-			</Box>
-			<Box
-				sx={{
-					p: 3,
-					width: "50%",
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-				}}
-			>
-				<Avatar
-					sx={{ width: "300px", height: "300px" }}
-					src={file ? URL.createObjectURL(file) : image.url}
-				>
-					<Person2Icon sx={{ fontSize: "200px" }} />
-				</Avatar>
-			</Box>
-		</Box>
+		<AuthorForm
+			handleDate={handleDate}
+			handleFile={handleFile}
+			handleInput={handleInput}
+			handleSubmit={handleSubmit}
+			data={state}
+			status={'Update'}
+		/>
 	);
 };
 

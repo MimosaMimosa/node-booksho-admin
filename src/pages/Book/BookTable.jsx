@@ -265,13 +265,15 @@ const BookTable = () => {
 													</IconButton>
 												</Tooltip>
 												<Tooltip title='view'>
-													<IconButton>
-														<EditIcon
-															sx={{
-																color: green[600],
-															}}
-														/>
-													</IconButton>
+													<Link to={book._id}>
+														<IconButton>
+															<EditIcon
+																sx={{
+																	color: green[600],
+																}}
+															/>
+														</IconButton>
+													</Link>
 												</Tooltip>
 												<Tooltip
 													title='Delete'

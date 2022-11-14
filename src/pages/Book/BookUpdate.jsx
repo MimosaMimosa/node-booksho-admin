@@ -1,13 +1,14 @@
 import dayjs from "dayjs";
 import { useEffect, useReducer } from "react";
 import axios from "axios";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import BookForm from "./BookForm";
 
-const BookCreate = () => {
+const BookUpdate = () => {
 	const [searchParams] = useSearchParams();
 	const navigate = useNavigate();
+	const params = useParams();
 
 	const reducer = (state, action) => {
 		switch (action.type) {
@@ -21,6 +22,9 @@ const BookCreate = () => {
 				return { ...state, categories: action.data };
 			case "ERRORS":
 				return { ...state, errors: action.data };
+			case "SHOW": {
+				return { ...state, ...action.data };
+			}
 			default:
 				return state;
 		}
@@ -44,7 +48,10 @@ const BookCreate = () => {
 		dispatch({ data, type: "DATE" });
 	};
 	const handleFile = (e) => {
-		dispatch({ data: e.target.files[0], type: "FILE" });
+		dispatch({
+			data: URL.createObjectURL(e.target.files[0]),
+			type: "FILE",
+		});
 	};
 	const handleInput = (e) => {
 		dispatch({
@@ -61,12 +68,16 @@ const BookCreate = () => {
 		formData.append("image", state.file);
 		formData.append("published_at", state.date.$d);
 
+        console.log(state.input);
 		for (let key in state.input) {
 			formData.append(key, state.input[key]);
 		}
 
 		axios
-			.post("http://localhost:4000/api/v1/admin/books", formData)
+			.post(
+				`http://localhost:4000/api/v1/admin/books/${params.id}`,
+				formData
+			)
 			.then((res) => {
 				toast.success(res.data.message);
 				navigate("/products");
@@ -78,6 +89,34 @@ const BookCreate = () => {
 
 	useEffect(() => {
 		axios
+			.get(`http://localhost:4000/api/v1/admin/books/${params.id}`)
+			.then((res) => {
+				const {
+					author,
+					category,
+					published_at,
+					name,
+					price,
+					image,
+					description,
+				} = res.data.book;
+				dispatch({
+					data: {
+						input: {
+							name,
+							price,
+							description,
+							author: author._id,
+							category: category._id,
+						},
+						date: dayjs(published_at),
+                        file: image[0].url
+					},
+					type: "SHOW",
+				});
+			});
+
+		axios
 			.get("http://localhost:4000/api/v1/admin/categories")
 			.then((res) => {
 				dispatch({ data: res.data.categories, type: "CATEGORIES" });
@@ -85,8 +124,8 @@ const BookCreate = () => {
 			.catch((error) => {
 				console.log(error);
 			});
-	}, [dispatch]);
-	
+	}, [dispatch, params.id]);
+
 	return (
 		<>
 			<BookForm
@@ -100,4 +139,4 @@ const BookCreate = () => {
 	);
 };
 
-export default BookCreate;
+export default BookUpdate;
