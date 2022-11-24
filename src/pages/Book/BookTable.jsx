@@ -77,6 +77,7 @@ const BookTable = () => {
 				cancelToken: source.token,
 			})
 			.then((res) => {
+				console.log(res.data.books)
 				dispatch({
 					type: "STORE_BOOKS",
 					books: {
@@ -183,7 +184,6 @@ const BookTable = () => {
 								<TableCell>Id</TableCell>
 								<TableCell align='right'>Author</TableCell>
 								<TableCell align='right'>Name</TableCell>
-								<TableCell align='right'>Category</TableCell>
 								<TableCell align='right'>
 									Published At
 								</TableCell>
@@ -235,9 +235,6 @@ const BookTable = () => {
 										</TableCell>
 										<TableCell align='right'>
 											{book.name}
-										</TableCell>
-										<TableCell align='right'>
-											{book.category.name}
 										</TableCell>
 										<TableCell align='right'>
 											{dayjs(book.published_at).format(

@@ -1,12 +1,15 @@
 import {
 	Box,
 	Button,
+	Checkbox,
 	FormControl,
 	FormHelperText,
 	Grid,
 	InputAdornment,
 	InputLabel,
+	ListItemText,
 	MenuItem,
+	OutlinedInput,
 	Paper,
 	Select,
 	TextField,
@@ -22,14 +25,27 @@ import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import { grey } from "@mui/material/colors";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import { CameraAlt } from "@mui/icons-material";
-import { useState,useEffect } from "react";
-import axios  from "axios";
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+const ITEM_HEIGHT = 50;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+	PaperProps: {
+		style: {
+			maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+			width: 250,
+			left: 532,
+		},
+	},
+};
 const BookForm = ({
 	data,
 	handleDate,
 	handleFile,
 	handleInput,
 	handleSubmit,
+	handleChange,
 }) => {
 	const { input, date, file, errors } = data;
 	const [categories, setCategories] = useState([]);
@@ -37,15 +53,16 @@ const BookForm = ({
 		axios
 			.get("http://localhost:4000/api/v1/admin/categories")
 			.then((res) => {
-				setCategories(res.data.categories)
+				setCategories(res.data.categories);
 			})
 			.catch((error) => {
 				console.log(error);
 			});
-	});
+	}, []);
+
 	return (
 		<>
-			<Box p={3} mt={2}>
+			<Box p={3} mt={2} sx={{ overflow: "hidden" }}>
 				<Grid container spacing={0}>
 					<Grid item md={6}>
 						<Paper elevation={2} sx={{ p: 3 }}>
@@ -118,34 +135,48 @@ const BookForm = ({
 								<Grid item md={6}>
 									<FormControl
 										fullWidth
-										error={errors.category ? true : false}
 									>
-										<InputLabel id='category-label'>
-											Category
+										<InputLabel id='demo-multiple-checkbox-label'>
+											Categories
 										</InputLabel>
 										<Select
-											labelId='category'
-											id='category'
-											name='category'
-											label='Categories'
-											defaultValue={""}
-											value={input.category}
-											onChange={handleInput}
+											labelId='demo-multiple-checkbox-label'
+											id='demo-multiple-checkbox'
+											multiple
+											value={input.categories}
+											onChange={handleChange}
+											input={
+												<OutlinedInput label='Categories' />
+											}
+											renderValue={(selected) =>
+												selected
+													.map((c) => c.name)
+													.join(", ")
+											}
+											MenuProps={MenuProps}
 										>
 											{categories.map((category) => (
 												<MenuItem
-													value={category._id}
 													key={category._id}
+													value={category}
 												>
-													{category.name}
+													<Checkbox
+														checked={
+															input.categories.find(
+																(c) =>
+																	c._id ===
+																	category._id
+															)
+																? true
+																: false
+														}
+													/>
+													<ListItemText
+														primary={category.name}
+													/>
 												</MenuItem>
 											))}
 										</Select>
-										{errors.category ? (
-											<FormHelperText error>
-												{errors.category}
-											</FormHelperText>
-										) : null}
 									</FormControl>
 								</Grid>
 								<Grid item md={6}>

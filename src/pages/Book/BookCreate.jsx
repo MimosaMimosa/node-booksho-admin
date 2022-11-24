@@ -31,7 +31,7 @@ const BookCreate = () => {
 			name: "",
 			price: "",
 			author: searchParams.get("authorId"),
-			category: "",
+			categories: [],
 			description: "",
 		},
 		date: dayjs(new Date()),
@@ -55,15 +55,32 @@ const BookCreate = () => {
 			type: "INPUT",
 		});
 	};
+
+	const handleChange = (e) => {
+		const {
+			target: { value },
+		} = e;
+		dispatch({
+			data: {
+				...state.input,
+				categories: value,
+			},
+			type: "INPUT",
+		});
+	};
+
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		const formData = new FormData();
 		formData.append("image", state.file);
 		formData.append("published_at", state.date.$d);
-
-		for (let key in state.input) {
-			formData.append(key, state.input[key]);
-		}
+		formData.append("name", state.input.name);
+		formData.append("price", state.input.price);
+		formData.append("author", state.input.author);
+		formData.append("description", state.input.description);
+		state.input.categories.forEach((c) => {
+			formData.append("categories", c._id);
+		});
 
 		axios
 			.post("http://localhost:4000/api/v1/admin/books", formData)
@@ -84,6 +101,7 @@ const BookCreate = () => {
 				handleFile={handleFile}
 				handleInput={handleInput}
 				handleSubmit={handleSubmit}
+				handleChange={handleChange}
 			/>
 		</>
 	);
